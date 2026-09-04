@@ -6,7 +6,7 @@ test.describe.configure({ mode: 'default' });
 test.use({ storageState: 'playwright/.auth/admin_pananames_user.json' });
 
 test.beforeEach(async ({ registerDomainsPage, shoppingCartPage }, testInfo) => {
-  console.log(`${testInfo.title}`)
+  console.log(`${testInfo.title}`);
   await shoppingCartPage.open();
   try {
     // Wait for the element to become visible, capping the wait at 5 seconds
@@ -23,62 +23,28 @@ test.afterEach(async ({ page }) => {
   await page.close();
 });
 
-test('Domain price 1 - ua', async ({
-  registerDomainsPage,
-  shoppingCartPage,
-}) => {
-  const firstItem =
-    registerDomainsPage.getfirstAvailableDomainWithListedPrice('ua');
+[{ domain: 'ua' }, { domain: 'uk' }, { domain: 'us' }].forEach(
+  ({ domain }) => {
+    test(`Domain price - ${domain}`, async ({
+      registerDomainsPage,
+      shoppingCartPage,
+    }) => {
+      const firstItem =
+        registerDomainsPage.getfirstAvailableDomainWithListedPrice(`${domain}`);
 
-  await registerDomainsPage.topHeader.cartIcon.click();
-  await expect(shoppingCartPage.cartRowFields(0).domain).toHaveText(
-    (await firstItem).domainName,
-  );
-  await expect(shoppingCartPage.cartRowFields(0).totalCost).toHaveText(
-    (await firstItem).listedPrice,
-  );
-  await expect(shoppingCartPage.totalPrice).toContainText(
-    (await firstItem).listedPrice,
-  );
-});
-
-test('Domain price 2 - uk', async ({
-  registerDomainsPage,
-  shoppingCartPage,
-}) => {
-  const firstItem =
-    registerDomainsPage.getfirstAvailableDomainWithListedPrice('uk');
-
-  await registerDomainsPage.topHeader.cartIcon.click();
-  await expect(shoppingCartPage.cartRowFields(0).domain).toHaveText(
-    (await firstItem).domainName,
-  );
-  await expect(shoppingCartPage.cartRowFields(0).totalCost).toHaveText(
-    (await firstItem).listedPrice,
-  );
-  await expect(shoppingCartPage.totalPrice).toContainText(
-    (await firstItem).listedPrice,
-  );
-});
-
-test('Domain price 3 - us', async ({
-  registerDomainsPage,
-  shoppingCartPage,
-}) => {
-  const firstItem =
-    registerDomainsPage.getfirstAvailableDomainWithListedPrice('us');
-
-  await registerDomainsPage.topHeader.cartIcon.click();
-  await expect(shoppingCartPage.cartRowFields(0).domain).toHaveText(
-    (await firstItem).domainName,
-  );
-  await expect(shoppingCartPage.cartRowFields(0).totalCost).toHaveText(
-    (await firstItem).listedPrice,
-  );
-  await expect(shoppingCartPage.totalPrice).toContainText(
-    (await firstItem).listedPrice,
-  );
-});
+      await registerDomainsPage.topHeader.cartIcon.click();
+      await expect(shoppingCartPage.cartRowFields(0).domain).toHaveText(
+        (await firstItem).domainName,
+      );
+      await expect(shoppingCartPage.cartRowFields(0).totalCost).toHaveText(
+        (await firstItem).listedPrice,
+      );
+      await expect(shoppingCartPage.totalPrice).toContainText(
+        (await firstItem).listedPrice,
+      );
+    });
+  },
+);
 
 test('Domain price for 3 SLD items', async ({
   registerDomainsPage,
